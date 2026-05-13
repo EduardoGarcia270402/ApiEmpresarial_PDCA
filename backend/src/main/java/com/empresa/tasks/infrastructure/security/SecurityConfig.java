@@ -18,7 +18,7 @@ import java.util.List;
  * Configuración de Spring Security — §12 de la Especificación.
  *
  * - Stateless (JWT, sin sesiones de servidor).
- * - Rutas públicas: /api/v1/auth/**, /api/v1/quality/**, /swagger-ui/**, /v3/api-docs/**
+ * - Rutas públicas: /api/v1/auth/**, /swagger-ui.html, /swagger-ui/**, /v3/api-docs/**
  * - Todas las demás rutas requieren autenticación vía Bearer token.
  * - CORS habilitado para el frontend (localhost:5173 en dev).
  */
@@ -40,8 +40,7 @@ public class SecurityConfig {
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll()
-                .requestMatchers("/api/v1/quality/**").permitAll()
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated()
             )
