@@ -82,6 +82,7 @@ Ya estaba configurado y se mantiene como parte de `mvn clean verify`:
 - Genera `target/site/jacoco/jacoco.xml`.
 - Verifica cobertura minima de `0.85`.
 - Si la cobertura baja del 85%, el build falla.
+- El check excluye infraestructura, DTOs, controllers y configuracion para medir la cobertura sobre las capas evaluadas por las pruebas del backend.
 
 ### SpotBugs
 
@@ -91,6 +92,8 @@ Se agrego `spotbugs-maven-plugin`:
 - Genera `target/spotbugsXml.xml`.
 - Falla el build con bugs de severidad alta.
 - Alimenta el motor SQA McCall, que lee ese XML para calcular Correctness.
+
+En GitHub Actions se ejecuta como paso separado antes del check de JaCoCo. Asi se genera `target/spotbugsXml.xml` aunque despues falle la cobertura.
 
 ### OWASP Dependency Check
 

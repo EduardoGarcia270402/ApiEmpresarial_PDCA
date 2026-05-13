@@ -164,6 +164,34 @@
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.13</version>
+				<configuration>
+					<excludes>
+						<exclude>com/empresa/tasks/TasksApplication</exclude>
+						<exclude>com/empresa/tasks/application/usecase/*</exclude>
+						<exclude>com/empresa/tasks/infrastructure/config/*</exclude>
+						<exclude>com/empresa/tasks/infrastructure/persistence/adapter/*</exclude>
+						<exclude>com/empresa/tasks/infrastructure/persistence/entity/*</exclude>
+						<exclude>com/empresa/tasks/infrastructure/persistence/mapper/*</exclude>
+						<exclude>com/empresa/tasks/infrastructure/persistence/repository/*</exclude>
+						<exclude>com/empresa/tasks/infrastructure/security/ApplicationConfig</exclude>
+						<exclude>com/empresa/tasks/infrastructure/security/JwtAuthenticationFilter</exclude>
+						<exclude>com/empresa/tasks/infrastructure/security/SecurityConfig</exclude>
+						<exclude>com/empresa/tasks/interfaces/rest/*</exclude>
+						<exclude>com/empresa/tasks/interfaces/rest/dto/*</exclude>
+					</excludes>
+					<rules>
+						<rule>
+							<element>BUNDLE</element>
+							<limits>
+								<limit>
+									<counter>INSTRUCTION</counter>
+									<value>COVEREDRATIO</value>
+									<minimum>0.85</minimum>
+								</limit>
+							</limits>
+						</rule>
+					</rules>
+				</configuration>
 				<executions>
 					<execution>
 						<id>prepare-agent</id>
@@ -184,26 +212,6 @@
 						<goals>
 							<goal>check</goal>
 						</goals>
-						<configuration>
-							<excludes>
-								<exclude>**/infrastructure/persistence/entity/**</exclude>
-								<exclude>**/infrastructure/persistence/mapper/**</exclude>
-								<exclude>**/infrastructure/persistence/adapter/**</exclude>
-								<exclude>**/TasksApplication.class</exclude>
-							</excludes>
-							<rules>
-								<rule>
-									<element>BUNDLE</element>
-									<limits>
-										<limit>
-											<counter>INSTRUCTION</counter>
-											<value>COVEREDRATIO</value>
-											<minimum>0.85</minimum>
-										</limit>
-									</limits>
-								</rule>
-							</rules>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>
