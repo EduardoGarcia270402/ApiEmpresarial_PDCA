@@ -118,33 +118,44 @@ cp .env.example .env
 # Editar .env con tus valores locales
 ```
 
-### 3. Levantar todo con Docker Compose
+### 3. Levantar PostgreSQL con Docker Compose
 
 ```bash
-docker compose up -d
+docker compose up -d postgres
 ```
 
-Esto levanta automáticamente:
-- 🐘 PostgreSQL en `localhost:5432`
-- ☕ Backend en `http://localhost:8080`
-- ⚛️ Frontend en `http://localhost:5173`
+Esto levanta PostgreSQL en `localhost:5432`.
 
-### 4. Verificar que todo funciona
+### 4. Ejecutar el backend con perfil de desarrollo
+
+```bash
+cd backend
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+```
+
+> **Perfiles disponibles:**
+> - `dev` — SQL verbose, logs DEBUG, Flyway con `clean-disabled=false` (para desarrollo)
+> - `prod` — SQL oculto, logs mínimos, Flyway con `clean-disabled=true` (para producción)
+
+### 5. Verificar que todo funciona
 
 ```bash
 # Health check del backend
 curl http://localhost:8080/api/v1/quality/score
 
-# Abrir el frontend
+# Abrir el frontend (si está configurado)
 open http://localhost:5173
 ```
 
-### Ejecución manual (sin Docker)
+### Ejecución manual completa (sin Docker)
 
 ```bash
+# Levantar PostgreSQL manualmente
+docker run -d -p 5432:5432 -e POSTGRES_DB=tasksdb -e POSTGRES_USER=root -e POSTGRES_PASSWORD=changeme postgres:16-alpine
+
 # Backend
 cd backend
-./mvnw spring-boot:run
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 
 # Frontend (en otra terminal)
 cd frontend
@@ -350,7 +361,21 @@ El sistema está desplegado en **Render.com**:
 
 ---
 
-## 📁 Estructura del Proyecto
+## �️ Migraciones de Base de Datos (Flyway)
+
+El proyecto utiliza **Flyway** para gestión de migraciones SQL. Las migraciones se encuentran en:
+
+```
+backend/src/main/resources/db/migration/
+├── V1__create_users.sql
+└── V2__create_tasks.sql
+```
+
+Las migraciones se ejecutan automáticamente al iniciar la aplicación (Spring Boot auto-detecta Flyway).
+
+---
+
+##  Estructura del Proyecto
 
 ```
 ApiEmpresarial_PDCA/
@@ -371,6 +396,13 @@ ApiEmpresarial_PDCA/
 │   │   │   └── exception/       # GlobalExceptionHandler
 │   │   └── sqa/                 # Motor de calidad McCall
 │   │       └── engine/          # QualityScoringEngine, ReportParser
+│   ├── src/main/resources/
+│   │   ├── application.properties          # Configuración base
+│   │   ├── application-dev.properties       # Perfil desarrollo
+│   │   ├── application-prod.properties      # Perfil producción
+│   │   └── db/migration/                   # Migraciones Flyway SQL
+│   │       ├── V1__create_users.sql
+│   │       └── V2__create_tasks.sql
 │   ├── src/test/                # Tests unitarios y de integración
 │   ├── pom.xml
 │   └── Dockerfile
@@ -382,7 +414,7 @@ ApiEmpresarial_PDCA/
 │   │   └── types/               # Interfaces TypeScript
 │   └── package.json
 ├── .env.example                 # Plantilla de variables de entorno
-├── docker-compose.yml           # Orquestación local completa
+├── docker-compose.yml           # Docker Compose para desarrollo local
 └── README.md
 ```
 

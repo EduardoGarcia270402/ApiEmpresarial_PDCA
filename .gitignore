@@ -5,5 +5,10 @@
 *.iml
 .vscode/
 .DS_Store
+
+ARCHITECTURE.md
+TASKS.md
+
+.atl/
 Asignacion_Tareas_WBS.txt
 Especificación Técnica Integral.txt
