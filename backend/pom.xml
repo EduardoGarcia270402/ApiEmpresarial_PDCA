@@ -28,6 +28,8 @@
 	</scm>
 	<properties>
 		<java.version>25</java.version>
+		<spotbugs.maven.plugin.version>4.9.8.3</spotbugs.maven.plugin.version>
+		<dependency.check.maven.version>12.2.2</dependency.check.maven.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -204,6 +206,42 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<version>${spotbugs.maven.plugin.version}</version>
+				<configuration>
+					<effort>Max</effort>
+					<threshold>High</threshold>
+					<xmlOutput>true</xmlOutput>
+					<xmlOutputDirectory>${project.build.directory}</xmlOutputDirectory>
+					<spotbugsXmlOutputFilename>spotbugsXml.xml</spotbugsXmlOutputFilename>
+					<failOnError>true</failOnError>
+				</configuration>
+				<executions>
+					<execution>
+						<id>spotbugs-analysis</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>spotbugs</goal>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.owasp</groupId>
+				<artifactId>dependency-check-maven</artifactId>
+				<version>${dependency.check.maven.version}</version>
+				<configuration>
+					<formats>
+						<format>HTML</format>
+						<format>XML</format>
+						<format>SARIF</format>
+					</formats>
+					<failBuildOnCVSS>7</failBuildOnCVSS>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
