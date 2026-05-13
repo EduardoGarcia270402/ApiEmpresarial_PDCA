@@ -1,0 +1,168 @@
+================================================================================
+FRONTEND — BITÁCORA DE DESARROLLO
+TICKET-013: Setup Frontend React + Vite + Tailwind
+================================================================================
+
+Fecha       : 2025-05-13
+Asignado a  : Frontend Developer
+Estado      : ✅ COMPLETADO
+Rama        : feature/TICKET-013-setup-frontend (pendiente push)
+
+────────────────────────────────────────────────────────────────────────────────
+1. QUÉ SE HIZO
+────────────────────────────────────────────────────────────────────────────────
+
+Se inicializó el proyecto SPA completo con la siguiente stack:
+
+  • React 19 + TypeScript 6 (Vite 8 como bundler)
+  • Tailwind CSS v4 (integración nativa via @tailwindcss/vite)
+  • React Router DOM v7 (enrutamiento SPA con rutas protegidas)
+  • Axios (HTTP client con interceptores de Auth)
+
+Además del scaffolding base, se dejó toda la capa de integración con
+el backend ya implementada, lista para conectar cuando los endpoints
+estén disponibles (TICKET-006, 007, 008).
+
+────────────────────────────────────────────────────────────────────────────────
+2. ESTRUCTURA DE CARPETAS CREADA
+────────────────────────────────────────────────────────────────────────────────
+
+  frontend/src/
+  ├── api/                  # Capa de servicios HTTP
+  │   ├── client.ts         # Instancia Axios + interceptores
+  │   ├── auth.ts           # authApi: register(), login()
+  │   ├── tasks.ts          # tasksApi: getAll(), create(), changeStatus(), remove()
+  │   └── index.ts          # Barrel export
+  ├── components/           # Componentes UI reutilizables
+  │   ├── Alert.tsx         # Alertas de error/éxito con auto-close
+  │   ├── Button.tsx        # Botón con variantes (primary/secondary/danger) y loading
+  │   ├── Input.tsx         # Input con label, error, accesibilidad (aria)
+  │   ├── Navbar.tsx        # Barra de navegación con logout
+  │   ├── ProtectedRoute.tsx# Wrapper que redirige a /login si no hay JWT
+  │   └── index.ts          # Barrel export
+  ├── context/
+  │   └── AuthContext.tsx    # Provider de autenticación (login/register/logout)
+  ├── hooks/                # Custom hooks (vacío, listo para expandir)
+  ├── pages/
+  │   ├── LoginPage.tsx     # Vista /login
+  │   ├── RegisterPage.tsx  # Vista /register
+  │   ├── DashboardPage.tsx # Vista / (CRUD completo de tareas)
+  │   └── index.ts          # Barrel export
+  ├── router/
+  │   └── index.tsx         # createBrowserRouter: rutas públicas y protegidas
+  ├── types/
+  │   └── index.ts          # Tipos del dominio (Task, User, DTOs, ApiError)
+  ├── utils/
+  │   ├── token.ts          # Helpers para sessionStorage (get/set/remove JWT)
+  │   └── error.ts          # extractErrorMessage() para errores de Axios
+  ├── App.tsx               # Componente raíz: AuthProvider + RouterProvider
+  ├── main.tsx              # Entry point: StrictMode + render
+  ├── index.css             # @import "tailwindcss" (Tailwind v4)
+  └── vite-env.d.ts         # Tipado de import.meta.env.VITE_API_URL
+
+────────────────────────────────────────────────────────────────────────────────
+3. DECISIONES TÉCNICAS Y JUSTIFICACIONES
+────────────────────────────────────────────────────────────────────────────────
+
+  ┌─ JWT en sessionStorage (no localStorage) ───────────────────────────────┐
+  │ Justificación: sessionStorage se limpia al cerrar la pestaña, lo cual  │
+  │ reduce la ventana de exposición del token. La especificación §12       │
+  │ indica JWT con expiración de 2h; sessionStorage complementa eso.      │
+  │ localStorage persistiría el token entre sesiones, lo cual no se desea. │
+  └────────────────────────────────────────────────────────────────────────┘
+
+  ┌─ Interceptor Axios: 401 → redirect a /login ───────────────────────────┐
+  │ Justificación: Evita que el usuario vea pantallas rotas si el JWT      │
+  │ expira. El interceptor limpia el token y redirige automáticamente.     │
+  │ Se excluye /login del redirect para evitar bucles infinitos.           │
+  └────────────────────────────────────────────────────────────────────────┘
+
+  ┌─ Proxy de Vite (/api → localhost:8080) ─────────────────────────────────┐
+  │ Justificación: Elimina problemas de CORS en desarrollo local. En       │
+  │ producción se usa VITE_API_URL apuntando al dominio de Render.         │
+  └────────────────────────────────────────────────────────────────────────┘
+
+  ┌─ Tailwind CSS v4 con @tailwindcss/vite ─────────────────────────────────┐
+  │ Justificación: Tailwind v4 eliminó la necesidad de PostCSS config y    │
+  │ tailwind.config.js. El plugin de Vite es la integración recomendada.   │
+  │ Resultado: 0 archivos de configuración adicionales.                    │
+  └────────────────────────────────────────────────────────────────────────┘
+
+  ┌─ Tipos alineados con el contrato del backend (§7 y §8) ────────────────┐
+  │ Justificación: Los tipos en src/types/index.ts replican exactamente    │
+  │ los DTOs y modelos documentados en la Especificación Técnica para      │
+  │ garantizar 0 discrepancias en la integración.                          │
+  └────────────────────────────────────────────────────────────────────────┘
+
+  ┌─ ProtectedRoute con Outlet pattern ─────────────────────────────────────┐
+  │ Justificación: Usa el patrón Layout Route de React Router v7. Todas   │
+  │ las rutas hijas heredan la protección sin repetir lógica.              │
+  └────────────────────────────────────────────────────────────────────────┘
+
+  ┌─ Accesibilidad en componentes ──────────────────────────────────────────┐
+  │ Input.tsx usa aria-invalid y aria-describedby para errores.            │
+  │ Alert.tsx usa role="alert" para lectores de pantalla.                  │
+  │ Button.tsx desactiva correctamente con disabled + cursor-not-allowed.  │
+  └────────────────────────────────────────────────────────────────────────┘
+
+────────────────────────────────────────────────────────────────────────────────
+4. VERIFICACIONES REALIZADAS
+────────────────────────────────────────────────────────────────────────────────
+
+  [✅] npx tsc -b               → 0 errores TypeScript
+  [✅] npm run build             → Build de producción exitoso (354ms)
+  [✅] npm run dev               → Servidor en http://localhost:5173
+  [✅] 0 vulnerabilidades npm    → npm audit clean
+  [✅] .env.local en .gitignore  → Secretos no se suben al repo
+
+────────────────────────────────────────────────────────────────────────────────
+5. DEPENDENCIAS INSTALADAS
+────────────────────────────────────────────────────────────────────────────────
+
+  Producción:
+    react           ^19.2.6
+    react-dom       ^19.2.6
+    react-router-dom (v7)
+    axios
+
+  Desarrollo:
+    tailwindcss     (v4)
+    @tailwindcss/vite
+    typescript      ~6.0.2
+    vite            ^8.0.12
+    @vitejs/plugin-react
+    eslint + plugins
+
+────────────────────────────────────────────────────────────────────────────────
+6. CRITERIOS DE ACEPTACIÓN (TICKET-013)
+────────────────────────────────────────────────────────────────────────────────
+
+  [✅] npm run dev levanta en localhost:5173
+  [✅] Estilos de Tailwind funcionan (clases utilitarias aplicadas)
+  [✅] Proyecto visible con UI funcional (login, register, dashboard)
+
+────────────────────────────────────────────────────────────────────────────────
+7. PRÓXIMOS PASOS (TICKETS DEPENDIENTES)
+────────────────────────────────────────────────────────────────────────────────
+
+  TICKET-014 (Auth + Interceptores + Ruteo):
+    → Ya implementado en este ticket de forma anticipada:
+      • AuthContext con login/register/logout
+      • Interceptor Axios con JWT automático
+      • ProtectedRoute con redirect a /login
+      • Páginas LoginPage y RegisterPage
+    → Pendiente: integración real cuando backend exponga /api/v1/auth/*
+
+  TICKET-015 (Dashboard + CRUD):
+    → Ya implementado de forma anticipada:
+      • DashboardPage con formulario de creación
+      • Lista de tareas con botones Iniciar/Completar/Cancelar/Eliminar
+      • Consumo de tasksApi completo
+    → Pendiente: integración real cuando backend exponga /api/v1/tasks/*
+
+  BLOQUEANTES DEL BACKEND:
+    • TICKET-006 (JPA Adapters)  → Sin esto no hay persistencia
+    • TICKET-007 (JWT + Security) → Sin esto no hay autenticación
+    • TICKET-008 (Controllers)    → Sin esto no hay endpoints
+
+================================================================================
