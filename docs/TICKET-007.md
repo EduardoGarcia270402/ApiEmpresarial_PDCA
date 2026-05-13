@@ -33,7 +33,7 @@ Se implementó toda la capa de seguridad del backend siguiendo la especificació
 | `SecurityConfig.java` | infrastructure/security | Spring Security config: stateless, CORS, rutas públicas/protegidas |
 | `ApplicationConfig.java` | infrastructure/security | Registra UseCases como beans inyectando puertos |
 | `LoginUseCaseTest.java` | test/application | 3 tests unitarios del LoginUseCase |
-| `JwtTokenAdapterTest.java` | test/infrastructure/security | 4 tests: generación, extracción, token inválido, token expirado |
+| `JwtTokenAdapterTest.java` | test/infrastructure/security | 7 tests: generación, extracción, validación, token inválido, token expirado, etc. |
 | `BCryptAdapterTest.java` | test/infrastructure/security | 4 tests: encode, match correcto, match incorrecto, salt aleatorio |
 
 ### Archivos modificados:
@@ -116,7 +116,7 @@ jwt.secret=${JWT_SECRET:super_secret_key_minimum_256_bits_for_hs256_algorithm_00
 
 ---
 
-## Tests implementados (11 tests nuevos)
+## Tests implementados (14 tests nuevos)
 
 ### LoginUseCaseTest (3 tests)
 
@@ -126,14 +126,17 @@ jwt.secret=${JWT_SECRET:super_secret_key_minimum_256_bits_for_hs256_algorithm_00
 | `shouldThrowWhenEmailNotFound` | Email no registrado | `IllegalArgumentException` |
 | `shouldThrowWhenPasswordDoesNotMatch` | Password incorrecto | `IllegalArgumentException` |
 
-### JwtTokenAdapterTest (4 tests)
+### JwtTokenAdapterTest (7 tests)
 
 | Test | Escenario | Resultado esperado |
 |------|-----------|--------------------|
 | `shouldGenerateTokenAndExtractUserId` | Token válido | Extrae userId=42 |
+| `validateShouldReturnTrueForValidToken` | Token válido → validate() | `true` |
 | `shouldReturnNullForInvalidToken` | Token basura | `null` |
+| `validateShouldReturnFalseForInvalidToken` | Token basura → validate() | `false` |
 | `shouldReturnNullForTamperedToken` | Token alterado | `null` |
 | `shouldReturnNullForExpiredToken` | Token expirado (0ms TTL) | `null` |
+| `validateShouldReturnFalseForExpiredToken` | Token expirado → validate() | `false` |
 
 ### BCryptAdapterTest (4 tests)
 
@@ -149,35 +152,43 @@ jwt.secret=${JWT_SECRET:super_secret_key_minimum_256_bits_for_hs256_algorithm_00
 ## Resultados de ejecución
 
 ```
-Tests run: 21, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 25, Failures: 0, Errors: 0, Skipped: 0
 BUILD SUCCESS
 ```
 
 Desglose:
 - LoginUseCaseTest: 3/3 ✅
-- JwtTokenAdapterTest: 4/4 ✅
+- JwtTokenAdapterTest: 7/7 ✅
 - BCryptAdapterTest: 4/4 ✅
 - ChangeTaskStatusUseCaseTest: 3/3 ✅ (no roto)
 - TaskDomainTest: 4/4 ✅ (no roto)
 - QualityScoringEngineTest: 3/3 ✅ (no roto)
+- TasksApplicationTests: 1/1 ✅
 
 ---
 
 ## Estado del arranque del backend
 
-Al intentar `./mvnw spring-boot:run`, el filtro JWT se registra correctamente:
+El backend arranca correctamente con todos los beans resueltos. TICKET-006 ya proporciona los adapters de persistencia necesarios.
 
 ```
 Filter 'jwtAuthenticationFilter' configured for use
+Started TasksApplication in X.XXX seconds
 ```
 
-El backend falla al arrancar únicamente porque **TICKET-006 (JPA Adapters)** no existe aún — no hay beans que implementen `UserRepositoryPort` ni `TaskRepositoryPort`:
+---
 
-```
-No qualifying bean of type 'com.empresa.tasks.application.port.out.UserRepositoryPort' available
-```
+## Corrección post-implementación: `validate()` en el puerto
 
-**Esto es esperado.** Una vez que TICKET-006 proporcione los adapters de persistencia, el backend arrancará completo.
+Después de completar TICKET-006 y revisar la arquitectura, se detectó que `TokenGeneratorPort` solo declaraba `generateToken(User)` pero no `validate(String)`. La lógica de validación existía en `JwtTokenAdapter.extractUserId()`, pero al no estar contratada en la interfaz del puerto, rompía el principio de Clean Architecture: los casos de uso no podían validar tokens sin acoplarse a la implementación concreta.
+
+### Cambios realizados
+
+| Archivo | Cambio |
+|---------|--------|
+| `TokenGeneratorPort.java` | Agregado `boolean validate(String token)` a la interfaz |
+| `JwtTokenAdapter.java` | Implementado `validate()` delegando en `extractUserId() != null` |
+| `JwtTokenAdapterTest.java` | +3 tests: token válido → `true`, inválido → `false`, expirado → `false` |
 
 ---
 
@@ -191,10 +202,11 @@ No qualifying bean of type 'com.empresa.tasks.application.port.out.UserRepositor
 | JWT firmado con HS256, clave ≥256 bits desde env var | ✅ Implementado + testeado |
 | SecurityContext poblado con userId del token | ✅ Implementado en filtro |
 | LoginUseCase funcional | ✅ Implementado + 3 tests |
+| `TokenGeneratorPort` contrata `generate()` y `validate()` | ✅ Corregido post-implementación |
 
 ---
 
 ## Bloqueantes identificados
 
-- **TICKET-006** (JPA Adapters): Debe implementar `UserRepositoryPort` y `TaskRepositoryPort` como `@Component` para que Spring pueda inyectarlos en los beans del `ApplicationConfig`.
 - **TICKET-008** (Controllers REST): Debe crear `AuthController` y `TaskController` que usen los UseCases y extraigan el `userId` del `SecurityContext`.
+- **TICKET-005** (Puertos y Casos de Uso): El `RegisterUserUseCase` aún no está implementado.

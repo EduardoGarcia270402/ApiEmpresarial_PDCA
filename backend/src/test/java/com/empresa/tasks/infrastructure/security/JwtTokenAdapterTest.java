@@ -44,6 +44,30 @@ class JwtTokenAdapterTest {
         assertNull(adapter.extractUserId(tampered));
     }
 
+    // --- Tests para validate() (método del puerto) ---
+
+    @Test
+    void validateShouldReturnTrueForValidToken() {
+        User user = new User(42L, "test@mail.com", "hash", "Test User");
+        String token = adapter.generateToken(user);
+
+        assertTrue(adapter.validate(token));
+    }
+
+    @Test
+    void validateShouldReturnFalseForInvalidToken() {
+        assertFalse(adapter.validate("invalid.token.here"));
+    }
+
+    @Test
+    void validateShouldReturnFalseForExpiredToken() {
+        JwtTokenAdapter expiredAdapter = new JwtTokenAdapter(SECRET, 0);
+        User user = new User(1L, "a@b.com", "hash", "A");
+        String token = expiredAdapter.generateToken(user);
+
+        assertFalse(expiredAdapter.validate(token));
+    }
+
     @Test
     void shouldReturnNullForExpiredToken() {
         // Adapter con expiración de 0ms → token expira inmediatamente

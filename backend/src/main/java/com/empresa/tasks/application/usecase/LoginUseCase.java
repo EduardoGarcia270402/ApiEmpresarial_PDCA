@@ -19,7 +19,7 @@ public class LoginUseCase {
         this.tokenGenerator = tokenGenerator;
     }
 
-    public record LoginResult(String token, long expiresIn) {}
+    public record LoginResult(String token, long expiresIn, Long userId) {}
 
     /**
      * Autentica al usuario por email/password.
@@ -35,6 +35,6 @@ public class LoginUseCase {
         }
 
         String token = tokenGenerator.generateToken(user);
-        return new LoginResult(token, 7200);
+        return new LoginResult(token, 7200, user.getId());
     }
 }
