@@ -5,3 +5,8 @@
 *.iml
 .vscode/
 .DS_Store
+
+ARCHITECTURE.md
+TASKS.md
+
+.atl/
