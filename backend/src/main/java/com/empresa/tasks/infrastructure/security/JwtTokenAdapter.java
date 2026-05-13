@@ -38,6 +38,11 @@ public class JwtTokenAdapter implements TokenGeneratorPort {
                 .compact();
     }
 
+    @Override
+    public boolean validate(String token) {
+        return extractUserId(token) != null;
+    }
+
     /**
      * Extrae el userId (subject) del token.
      * Retorna null si el token es inválido o expirado.

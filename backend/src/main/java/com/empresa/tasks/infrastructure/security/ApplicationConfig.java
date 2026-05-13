@@ -6,6 +6,7 @@ import com.empresa.tasks.application.port.out.TokenGeneratorPort;
 import com.empresa.tasks.application.port.out.UserRepositoryPort;
 import com.empresa.tasks.application.usecase.ChangeTaskStatusUseCase;
 import com.empresa.tasks.application.usecase.CreateTaskUseCase;
+import com.empresa.tasks.application.usecase.DeleteTaskUseCase;
 import com.empresa.tasks.application.usecase.LoginUseCase;
 import com.empresa.tasks.application.usecase.RegisterUserUseCase;
 import org.springframework.context.annotation.Bean;
@@ -40,5 +41,10 @@ public class ApplicationConfig {
     @Bean
     public ChangeTaskStatusUseCase changeTaskStatusUseCase(TaskRepositoryPort taskRepo) {
         return new ChangeTaskStatusUseCase(taskRepo);
+    }
+
+    @Bean
+    public DeleteTaskUseCase deleteTaskUseCase(TaskRepositoryPort taskRepo) {
+        return new DeleteTaskUseCase(taskRepo);
     }
 }
