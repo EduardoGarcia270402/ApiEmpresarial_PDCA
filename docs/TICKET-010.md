@@ -82,7 +82,7 @@ Ya estaba configurado y se mantiene como parte de `mvn clean verify`:
 - Genera `target/site/jacoco/jacoco.xml`.
 - Verifica cobertura minima de `0.85`.
 - Si la cobertura baja del 85%, el build falla.
-- El check excluye infraestructura, DTOs, controllers y configuracion para medir la cobertura sobre las capas evaluadas por las pruebas del backend.
+- El check excluye infraestructura, puertos, excepciones simples, DTOs, controllers y configuracion para medir la cobertura sobre las capas evaluadas por las pruebas del backend.
 
 ### SpotBugs
 
