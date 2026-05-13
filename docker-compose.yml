@@ -1,4 +1,8 @@
 services:
+
+  # ─────────────────────────────────────────
+  # BASE DE DATOS
+  # ─────────────────────────────────────────
   postgres:
     image: postgres:16-alpine
     container_name: tasks_postgres
@@ -15,7 +19,55 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - tasks_network
+
+  # ─────────────────────────────────────────
+  # BACKEND — Spring Boot
+  # ─────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tasks_backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-tasksdb}
+      DB_USER: ${DB_USER:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-changeme}
+      JWT_SECRET: ${JWT_SECRET:-super_secret_key_minimum_256_bits_for_hs256_algorithm_00}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-7200000}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - tasks_network
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────
+  # FRONTEND — React + Nginx
+  # ─────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: tasks_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - tasks_network
+    restart: unless-stopped
 
 volumes:
   postgres_data:
     driver: local
+
+networks:
+  tasks_network:
+    driver: bridge
