@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { ProtectedRoute } from '../components';
-import { DashboardPage, LoginPage, RegisterPage } from '../pages';
+import { DashboardPage, LoginPage, RegisterPage, TaskDetailPage } from '../pages';
 
 /**
  * Router centralizado.
@@ -22,6 +22,10 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <DashboardPage />,
+      },
+      {
+        path: '/task/:id',
+        element: <TaskDetailPage />,
       },
     ],
   },
