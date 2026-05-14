@@ -1,0 +1,195 @@
+{
+	"id": "56da63dd-c79e-48c0-af1a-8b57c63fa487",
+	"name": "API_GESTION_TAREAS",
+	"timestamp": "2026-05-14T01:07:08.919Z",
+	"collection_id": "40874800-5aa844e2-ed26-4d5c-9926-fb35e7d63244",
+	"folder_id": 0,
+	"environment_id": "40874800-38ce6f06-3ad2-49f8-96a0-7a5a5817b17d",
+	"totalPass": 8,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2026-05-14T01:07:05.955Z",
+	"totalFail": 0,
+	"results": [
+		{
+			"id": "ebf7043f-da5d-41a2-94f5-b80f3b64aaf8",
+			"name": "RegistarCorreo",
+			"url": "http://localhost:8080/api/v1/auth/register",
+			"time": 665,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Usuario registrado": true
+			},
+			"testPassFailCounts": {
+				"Usuario registrado": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				665
+			],
+			"allTests": [
+				{
+					"Usuario registrado": true
+				}
+			]
+		},
+		{
+			"id": "61b992a0-6dec-496f-9ec5-ae0b6477c06e",
+			"name": "Login",
+			"url": "http://localhost:8080/api/v1/auth/login",
+			"time": 193,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Login exitoso": true,
+				"Token recibido": true
+			},
+			"testPassFailCounts": {
+				"Login exitoso": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Token recibido": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				193
+			],
+			"allTests": [
+				{
+					"Login exitoso": true,
+					"Token recibido": true
+				}
+			]
+		},
+		{
+			"id": "940d5361-dd38-4b85-ab0e-350434fc4f82",
+			"name": "CrearTarea",
+			"url": "http://localhost:8080/api/v1/tasks",
+			"time": 160,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Tarea creada": true,
+				"ID de tarea recibido": true
+			},
+			"testPassFailCounts": {
+				"Tarea creada": {
+					"pass": 1,
+					"fail": 0
+				},
+				"ID de tarea recibido": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				160
+			],
+			"allTests": [
+				{
+					"Tarea creada": true,
+					"ID de tarea recibido": true
+				}
+			]
+		},
+		{
+			"id": "ef65c5ea-26d1-41ef-ab17-f6547da38006",
+			"name": "ActualizarTarea",
+			"url": "http://localhost:8080/api/v1/tasks/3/status",
+			"time": 100,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Tarea completada": true,
+				"Estado COMPLETED": true
+			},
+			"testPassFailCounts": {
+				"Tarea completada": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Estado COMPLETED": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				100
+			],
+			"allTests": [
+				{
+					"Tarea completada": true,
+					"Estado COMPLETED": true
+				}
+			]
+		},
+		{
+			"id": "67aa6c1b-deee-4036-94ac-9b2f5df097b7",
+			"name": "EliminarTarea",
+			"url": "http://localhost:8080/api/v1/tasks/3",
+			"time": 46,
+			"responseCode": {
+				"code": 204,
+				"name": "No Content"
+			},
+			"tests": {
+				"Tarea eliminada": true
+			},
+			"testPassFailCounts": {
+				"Tarea eliminada": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				46
+			],
+			"allTests": [
+				{
+					"Tarea eliminada": true
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 1164,
+	"collection": {
+		"requests": [
+			{
+				"id": "ebf7043f-da5d-41a2-94f5-b80f3b64aaf8",
+				"method": "POST"
+			},
+			{
+				"id": "61b992a0-6dec-496f-9ec5-ae0b6477c06e",
+				"method": "POST"
+			},
+			{
+				"id": "940d5361-dd38-4b85-ab0e-350434fc4f82",
+				"method": "POST"
+			},
+			{
+				"id": "ef65c5ea-26d1-41ef-ab17-f6547da38006",
+				"method": "PATCH"
+			},
+			{
+				"id": "67aa6c1b-deee-4036-94ac-9b2f5df097b7",
+				"method": "DELETE"
+			}
+		]
+	}
+}
