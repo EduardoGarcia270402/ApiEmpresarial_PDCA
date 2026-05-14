@@ -1,0 +1,50 @@
+databases:
+  - name: tasksdb
+    plan: free
+    databaseName: tasksdb
+    user: root
+
+services:
+  - type: web
+    name: tasks-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: tasksdb
+          property: connectionString
+      - key: DB_USER
+        fromDatabase:
+          name: tasksdb
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: tasksdb
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRATION_MS
+        value: "7200000"
+
+  - type: web
+    name: tasks-frontend
+    runtime: static
+    buildCommand: cd frontend && npm ci && npm run build
+    staticPublishPath: frontend/dist
+    plan: free
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        value: https://tasks-api.onrender.com/api/v1
