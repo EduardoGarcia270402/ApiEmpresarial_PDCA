@@ -59,7 +59,7 @@ public class SecurityConfig {
             "http://localhost:3000",
             "http://localhost:80",
             "http://localhost",
-            "https://tasks-frontend.onrender.com"
+            "https://tasks-frontend-z61r.onrender.com"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
