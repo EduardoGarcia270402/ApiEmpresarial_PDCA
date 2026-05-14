@@ -14,6 +14,8 @@ permissions:
 
 env:
   JAVA_VERSION: "25"
+  DEPENDENCY_CHECK_VERSION: "12.2.2"
+  DEPENDENCY_CHECK_DATA_DIR: ".dependency-check-data"
 
 jobs:
   backend-quality:
@@ -21,6 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      security-events: write
     defaults:
       run:
         working-directory: backend
@@ -63,6 +66,56 @@ jobs:
           name: spotbugs-report
           path: backend/target/spotbugsXml.xml
           if-no-files-found: warn
+
+      - name: Cache OWASP Dependency Check data
+        if: github.event_name == 'push'
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.DEPENDENCY_CHECK_DATA_DIR }}
+          key: dependency-check-data-${{ runner.os }}-${{ env.DEPENDENCY_CHECK_VERSION }}
+          restore-keys: |
+            dependency-check-data-${{ runner.os }}-
+
+      - name: OWASP Dependency Check
+        # Only runs on push to main/develop to keep PRs fast (~25 min NVD download).
+        if: github.event_name == 'push'
+        continue-on-error: true
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: |
+          NVD_ARGS=""
+          if [ -n "$NVD_API_KEY" ]; then
+            echo "Using NVD API key from GitHub Actions secrets."
+            NVD_ARGS="-DnvdApiKey=$NVD_API_KEY"
+          else
+            echo "NVD_API_KEY secret is not configured. Dependency Check will run without an API key."
+          fi
+
+          ./mvnw -B org.owasp:dependency-check-maven:${DEPENDENCY_CHECK_VERSION}:check \
+            -DdataDirectory=../${DEPENDENCY_CHECK_DATA_DIR} \
+            -DfailBuildOnCVSS=7 \
+            -DassemblyAnalyzerEnabled=false \
+            -DnodeAnalyzerEnabled=false \
+            -DnodeAuditAnalyzerEnabled=false \
+            -DretireJsAnalyzerEnabled=false \
+            $NVD_ARGS
+
+      - name: Upload OWASP Dependency Check reports
+        if: always() && github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-report
+          path: |
+            backend/target/dependency-check-report.html
+            backend/target/dependency-check-report.xml
+            backend/target/dependency-check-report.sarif
+          if-no-files-found: warn
+
+      - name: Upload OWASP SARIF to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always() && github.event_name == 'push' && hashFiles('backend/target/dependency-check-report.sarif') != ''
+        with:
+          sarif_file: backend/target/dependency-check-report.sarif
 
       - name: SonarCloud scan and Quality Gate
         env:
