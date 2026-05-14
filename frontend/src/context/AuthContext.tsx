@@ -2,7 +2,6 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -23,16 +22,10 @@ interface AuthState {
 const AuthContext = createContext<AuthState | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [token, setTokenState] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  // Hidrata el estado desde sessionStorage al montar
-  useEffect(() => {
-    if (isAuthenticated()) {
-      setTokenState(getToken());
-    }
-    setLoading(false);
-  }, []);
+  const [token, setTokenState] = useState<string | null>(() =>
+    isAuthenticated() ? getToken() : null,
+  );
+  const loading = false;
 
   const login = useCallback(async (data: LoginRequest) => {
     const res = await authApi.login(data);
@@ -64,6 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth(): AuthState {
   const ctx = useContext(AuthContext);
   if (ctx === undefined) {
