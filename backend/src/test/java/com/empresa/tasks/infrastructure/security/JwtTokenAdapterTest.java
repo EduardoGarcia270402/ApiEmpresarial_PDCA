@@ -38,8 +38,10 @@ class JwtTokenAdapterTest {
         User user = new User(1L, "a@b.com", "hash", "A");
         String token = adapter.generateToken(user);
 
-        // Tamper: cambiar el último carácter
-        String tampered = token.substring(0, token.length() - 1) + "X";
+        // Tamper: alterar el payload (segunda parte del JWT)
+        String[] parts = token.split("\\.");
+        parts[1] = parts[1].substring(0, parts[1].length() - 4) + "XXXX";
+        String tampered = String.join(".", parts);
 
         assertNull(adapter.extractUserId(tampered));
     }
