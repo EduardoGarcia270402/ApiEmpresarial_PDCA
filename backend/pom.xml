@@ -167,7 +167,10 @@
 				<configuration>
 					<excludes>
 						<exclude>com/empresa/tasks/TasksApplication</exclude>
+						<exclude>com/empresa/tasks/application/exception/*</exclude>
+						<exclude>com/empresa/tasks/application/port/out/*</exclude>
 						<exclude>com/empresa/tasks/application/usecase/*</exclude>
+						<exclude>com/empresa/tasks/domain/exception/*</exclude>
 						<exclude>com/empresa/tasks/infrastructure/config/*</exclude>
 						<exclude>com/empresa/tasks/infrastructure/persistence/adapter/*</exclude>
 						<exclude>com/empresa/tasks/infrastructure/persistence/entity/*</exclude>
