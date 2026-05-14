@@ -54,13 +54,12 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
-            "http://localhost:5173",
-            "http://localhost:5174",
-            "http://localhost:3000",
-            "http://localhost:80",
-            "http://localhost",
-            "https://tasks-frontend-z61r.onrender.com"
-        ));
+                "http://localhost:5173",
+                "http://localhost:5174",
+                "http://localhost:3000",
+                "http://localhost:80",
+                "http://localhost"
+            ));
         config.setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
