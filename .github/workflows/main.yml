@@ -16,6 +16,7 @@ permissions:
 env:
   JAVA_VERSION: "25"
   DEPENDENCY_CHECK_VERSION: "12.2.2"
+  DEPENDENCY_CHECK_DATA_DIR: ".dependency-check-data"
 
 jobs:
   backend-quality:
@@ -64,6 +65,14 @@ jobs:
           path: backend/target/spotbugsXml.xml
           if-no-files-found: warn
 
+      - name: Cache OWASP Dependency Check data
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.DEPENDENCY_CHECK_DATA_DIR }}
+          key: dependency-check-data-${{ runner.os }}-${{ env.DEPENDENCY_CHECK_VERSION }}
+          restore-keys: |
+            dependency-check-data-${{ runner.os }}-
+
       - name: OWASP Dependency Check
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
@@ -77,7 +86,12 @@ jobs:
           fi
 
           ./mvnw -B org.owasp:dependency-check-maven:${DEPENDENCY_CHECK_VERSION}:check \
+            -DdataDirectory=../${DEPENDENCY_CHECK_DATA_DIR} \
             -DfailBuildOnCVSS=7 \
+            -DassemblyAnalyzerEnabled=false \
+            -DnodeAnalyzerEnabled=false \
+            -DnodeAuditAnalyzerEnabled=false \
+            -DretireJsAnalyzerEnabled=false \
             $NVD_ARGS
 
       - name: Upload OWASP Dependency Check reports
