@@ -68,7 +68,8 @@ export default function TaskDetailPage() {
   }, [taskId]);
 
   useEffect(() => {
-    if (!task) fetchTask();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (!task) void fetchTask();
   }, [task, fetchTask]);
 
   const handleStatusChange = async (status: TaskStatus) => {

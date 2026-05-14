@@ -60,4 +60,28 @@ class ChangeTaskStatusUseCaseTest {
             useCase.execute(1L, 99L, TaskStatus.COMPLETED)
         );
     }
+
+    @Test
+    void deberiaIniciarProgresoExitosamente() {
+        Task task = new Task(1L, 10L, "Estudiar", "Cap 1");
+        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
+        when(taskRepository.save(any(Task.class))).thenReturn(task);
+
+        Task result = useCase.execute(1L, 10L, TaskStatus.IN_PROGRESS);
+
+        assertEquals(TaskStatus.IN_PROGRESS, result.getStatus());
+        verify(taskRepository).save(task);
+    }
+
+    @Test
+    void deberiaCancelarTareaExitosamente() {
+        Task task = new Task(1L, 10L, "Estudiar", "Cap 1");
+        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
+        when(taskRepository.save(any(Task.class))).thenReturn(task);
+
+        Task result = useCase.execute(1L, 10L, TaskStatus.CANCELLED);
+
+        assertEquals(TaskStatus.CANCELLED, result.getStatus());
+        verify(taskRepository).save(task);
+    }
 }

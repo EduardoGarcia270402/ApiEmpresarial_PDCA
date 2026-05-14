@@ -42,7 +42,8 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    fetchTasks();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void fetchTasks();
   }, [fetchTasks]);
 
   const handleCreate = async (e: React.FormEvent) => {
