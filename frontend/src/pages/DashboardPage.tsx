@@ -135,11 +135,14 @@ export default function DashboardPage() {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
-                    <h3
-                      className="font-medium text-indigo-600 truncate cursor-pointer hover:underline"
-                      onClick={() => navigate(`/task/${task.id}`, { state: { task } })}
-                    >
-                      {task.title}
+                    <h3 className="font-medium truncate">
+                      <button
+                        type="button"
+                        className="text-indigo-600 hover:underline text-left"
+                        onClick={() => navigate(`/task/${task.id}`, { state: { task } })}
+                      >
+                        {task.title}
+                      </button>
                     </h3>
                     {task.description && (
                       <p className="mt-1 text-sm text-gray-500">{task.description}</p>

@@ -121,14 +121,16 @@ export default function TaskDetailPage() {
         {error && <Alert type="error" message={error} onClose={() => setError(null)} />}
         {success && <Alert type="success" message={success} onClose={() => setSuccess(null)} />}
 
-        {loading ? (
+        {loading && (
           /* ── Skeleton ── */
           <div className="animate-pulse space-y-4">
             <div className="h-8 w-2/3 rounded bg-gray-200" />
             <div className="h-4 w-1/4 rounded bg-gray-200" />
             <div className="h-24 w-full rounded bg-gray-200" />
           </div>
-        ) : task ? (
+        )}
+
+        {!loading && task && (
           <div className="space-y-6">
             {/* ── Encabezado ── */}
             <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -224,14 +226,7 @@ export default function TaskDetailPage() {
 
               {/* ── Eliminar con confirmación ── */}
               <div className="mt-6 border-t border-gray-100 pt-4">
-                {!showDeleteConfirm ? (
-                  <button
-                    onClick={() => setShowDeleteConfirm(true)}
-                    className="text-sm font-medium text-red-600 hover:text-red-800 transition-colors"
-                  >
-                    Eliminar esta tarea permanentemente
-                  </button>
-                ) : (
+                {showDeleteConfirm ? (
                   <div className="flex items-center gap-3">
                     <span className="text-sm text-gray-600">¿Estás seguro?</span>
                     <Button
@@ -248,11 +243,19 @@ export default function TaskDetailPage() {
                       Cancelar
                     </Button>
                   </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="text-sm font-medium text-red-600 hover:text-red-800 transition-colors"
+                  >
+                    Eliminar esta tarea permanentemente
+                  </button>
                 )}
               </div>
             </div>
           </div>
-        ) : null}
+        )}
       </main>
     </div>
   );
