@@ -68,6 +68,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Cache OWASP Dependency Check data
+        if: github.event_name == 'push'
         uses: actions/cache@v4
         with:
           path: ${{ env.DEPENDENCY_CHECK_DATA_DIR }}
@@ -76,8 +77,8 @@ jobs:
             dependency-check-data-${{ runner.os }}-
 
       - name: OWASP Dependency Check
-        # Temporary non-blocking gate: keep the security report visible without blocking deployment.
-        # Remove continue-on-error when all reported vulnerabilities are fixed or suppressed.
+        # Only runs on push to main/develop to keep PRs fast (~25 min NVD download).
+        if: github.event_name == 'push'
         continue-on-error: true
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
@@ -100,8 +101,8 @@ jobs:
             $NVD_ARGS
 
       - name: Upload OWASP Dependency Check reports
+        if: always() && github.event_name == 'push'
         uses: actions/upload-artifact@v4
-        if: always()
         with:
           name: dependency-check-report
           path: |
@@ -112,7 +113,7 @@ jobs:
 
       - name: Upload OWASP SARIF to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
-        if: always() && hashFiles('backend/target/dependency-check-report.sarif') != ''
+        if: always() && github.event_name == 'push' && hashFiles('backend/target/dependency-check-report.sarif') != ''
         with:
           sarif_file: backend/target/dependency-check-report.sarif
 
