@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from 'react';
 import { authApi } from '../api';
-import { getToken, isAuthenticated, removeToken, setToken } from '../utils/token';
+import { getToken, isAuthenticated, removeToken, setToken as saveToken } from '../utils/token';
 import type { LoginRequest, RegisterRequest } from '../types';
 
 interface AuthState {
@@ -22,15 +22,15 @@ interface AuthState {
 const AuthContext = createContext<AuthState | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [token, setTokenState] = useState<string | null>(() =>
+  const [token, setToken] = useState<string | null>(() =>
     isAuthenticated() ? getToken() : null,
   );
   const loading = false;
 
   const login = useCallback(async (data: LoginRequest) => {
     const res = await authApi.login(data);
+    saveToken(res.token);
     setToken(res.token);
-    setTokenState(res.token);
   }, []);
 
   const register = useCallback(async (data: RegisterRequest) => {
@@ -39,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(() => {
     removeToken();
-    setTokenState(null);
+    setToken(null);
   }, []);
 
   const value = useMemo<AuthState>(
