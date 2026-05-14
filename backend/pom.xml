@@ -166,21 +166,17 @@
 				<version>0.8.13</version>
 				<configuration>
 					<excludes>
-						<exclude>com/empresa/tasks/TasksApplication</exclude>
-						<exclude>com/empresa/tasks/application/exception/*</exclude>
-						<exclude>com/empresa/tasks/application/port/out/*</exclude>
-						<exclude>com/empresa/tasks/application/usecase/*</exclude>
-						<exclude>com/empresa/tasks/domain/exception/*</exclude>
-						<exclude>com/empresa/tasks/infrastructure/config/*</exclude>
-						<exclude>com/empresa/tasks/infrastructure/persistence/adapter/*</exclude>
-						<exclude>com/empresa/tasks/infrastructure/persistence/entity/*</exclude>
-						<exclude>com/empresa/tasks/infrastructure/persistence/mapper/*</exclude>
-						<exclude>com/empresa/tasks/infrastructure/persistence/repository/*</exclude>
-						<exclude>com/empresa/tasks/infrastructure/security/ApplicationConfig</exclude>
-						<exclude>com/empresa/tasks/infrastructure/security/JwtAuthenticationFilter</exclude>
-						<exclude>com/empresa/tasks/infrastructure/security/SecurityConfig</exclude>
-						<exclude>com/empresa/tasks/interfaces/rest/*</exclude>
-						<exclude>com/empresa/tasks/interfaces/rest/dto/*</exclude>
+						<exclude>**/TasksApplication.*</exclude>
+						<exclude>**/application/exception/**</exclude>
+						<exclude>**/application/port/out/**</exclude>
+						<exclude>**/application/usecase/**</exclude>
+						<exclude>**/domain/exception/**</exclude>
+						<exclude>**/infrastructure/config/**</exclude>
+						<exclude>**/infrastructure/persistence/**</exclude>
+						<exclude>**/infrastructure/security/ApplicationConfig.*</exclude>
+						<exclude>**/infrastructure/security/JwtAuthenticationFilter.*</exclude>
+						<exclude>**/infrastructure/security/SecurityConfig.*</exclude>
+						<exclude>**/interfaces/rest/**</exclude>
 					</excludes>
 					<rules>
 						<rule>
