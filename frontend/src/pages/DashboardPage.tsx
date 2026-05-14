@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { tasksApi } from '../api';
 import { Alert, Button, Navbar } from '../components';
 import type { Task, TaskStatus } from '../types';
@@ -19,6 +20,7 @@ const STATUS_COLORS: Record<TaskStatus, string> = {
 };
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -133,7 +135,12 @@ export default function DashboardPage() {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-medium text-gray-900 truncate">{task.title}</h3>
+                    <h3
+                      className="font-medium text-indigo-600 truncate cursor-pointer hover:underline"
+                      onClick={() => navigate(`/task/${task.id}`, { state: { task } })}
+                    >
+                      {task.title}
+                    </h3>
                     {task.description && (
                       <p className="mt-1 text-sm text-gray-500">{task.description}</p>
                     )}

@@ -26,6 +26,15 @@ public class Task {
 
     // ── Reglas de negocio ──────────────────────────────────
 
+    public void startProgress() {
+        if (this.status != TaskStatus.PENDING) {
+            throw new InvalidStatusTransitionException(
+                this.status.name(), TaskStatus.IN_PROGRESS.name()
+            );
+        }
+        this.status = TaskStatus.IN_PROGRESS;
+    }
+
     public void markAsCompleted() {
         if (this.status == TaskStatus.CANCELLED) {
             throw new InvalidStatusTransitionException(

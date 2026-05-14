@@ -15,6 +15,11 @@ export const tasksApi = {
     return apiClient.get<Task[]>('/tasks', { params }).then((r) => r.data);
   },
 
+  async getById(id: number): Promise<Task | undefined> {
+    const tasks = await this.getAll();
+    return tasks.find((t) => t.id === id);
+  },
+
   create(data: CreateTaskRequest): Promise<Task> {
     return apiClient.post<Task>('/tasks', data).then((r) => r.data);
   },

@@ -22,7 +22,9 @@ public class ChangeTaskStatusUseCase {
             throw new UnauthorizedTaskAccessException();
         }
 
-        if (newStatus == TaskStatus.COMPLETED) {
+        if (newStatus == TaskStatus.IN_PROGRESS) {
+            task.startProgress();
+        } else if (newStatus == TaskStatus.COMPLETED) {
             task.markAsCompleted();
         } else if (newStatus == TaskStatus.CANCELLED) {
             task.cancel();
